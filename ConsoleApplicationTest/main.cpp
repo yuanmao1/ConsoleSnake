@@ -47,10 +47,10 @@ void dfs(Snake* current) {
 
 int score = 0;
 
-int lastTime = 0;
+int64_t lastTime = 0;
 int speed = 130;
 void moveSnake() {
-    int currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    const auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     if (currentTime - lastTime < speed) return;
     direction = tempDirection1;
     tempDirection1 = tempDirection2;
@@ -58,23 +58,23 @@ void moveSnake() {
     dfs(head);
     if (direction == 0) {
         head->x--;
-        if(head->x == 0 && speed != 100) head->x = row - 1;
-        else if(head->x == 0) figure.gameOver();
+        if (head->x == 0 && speed != 100) head->x = row - 1;
+        else if (head->x == 0) figure.gameOver();
     }
     if (direction == 1) {
         head->x++;
-        if(head->x == row && speed != 100) head->x = 1;
-        else if(head->x == row) figure.gameOver();
+        if (head->x == row && speed != 100) head->x = 1;
+        else if (head->x == row) figure.gameOver();
     }
-    if (direction == 2){
+    if (direction == 2) {
         head->y -= 2;
-        if(head->y == 0 && speed != 100) head->y = col - 2;
-        else if(head->y == 0) figure.gameOver();
+        if (head->y == 0 && speed != 100) head->y = col - 2;
+        else if (head->y == 0) figure.gameOver();
     }
     if (direction == 3) {
         head->y += 2;
         if (head->y == col && speed != 100) head->y = 2;
-        else if(head->y == col) figure.gameOver();
+        else if (head->y == col) figure.gameOver();
     }
     if (figure.getChar(head->x, head->y) == 'O') {
         //game over
@@ -88,29 +88,23 @@ void moveSnake() {
         Snake* newBodyPart = new Snake(head->x, head->y);
         tail->nextBodyPart = newBodyPart;
         tail = newBodyPart;
-        int fx = rand() % (row - 2) + 1;
-        int fy = rand() % (col - 2) + 1;
-        while (figure.getChar(fx, fy) == 'O' || fy % 2 == 1 || (fx == head->x && fy == head->y)) {
-            fx = rand() % (row - 2) + 1;
-            fy = rand() % (col - 2) / 2 + 1;
-        }
-        figure.setChar(fx, fy, 'F');
+        figure.generateFood();
     }
 }
 
 void directionChange(char key) {
-    if ((key == 'w' || key == 'W') && direction != 1 && tempDirection1 == direction) tempDirection1 = 0, tempDirection2 = 0;
-    else if ((key == 'w' || key == 'W') && tempDirection1 != direction && tempDirection1 != 1) tempDirection2 = 0;
-    if ((key == 's' || key == 'S') && direction != 0 && tempDirection1 == direction) tempDirection1 = 1, tempDirection2 = 1;
-    else if ((key == 's' || key == 'S') && tempDirection1 != direction && tempDirection1 != 0) tempDirection2 = 1;
-    if ((key == 'a' || key == 'A') && direction != 3 && tempDirection1 == direction) tempDirection1 = 2, tempDirection2 = 2;
-    else if ((key == 'a' || key == 'A') && tempDirection1 != direction && tempDirection1 != 3) tempDirection2 = 2;
-    if ((key == 'd' || key == 'D') && direction != 2 && tempDirection1 == direction) tempDirection1 = 3, tempDirection2 = 3;
-    else if ((key == 'd' || key == 'D') && tempDirection1 != direction && tempDirection1 != 2) tempDirection2 = 3;
+    if (toupper(key) == 'W' && direction != 1 && tempDirection1 == direction) tempDirection1 = 0, tempDirection2 = 0;
+    else if (toupper(key) == 'W' && tempDirection1 != direction && tempDirection1 != 1) tempDirection2 = 0;
+    if (toupper(key) == 'S' && direction != 0 && tempDirection1 == direction) tempDirection1 = 1, tempDirection2 = 1;
+    else if (toupper(key) == 'S' && tempDirection1 != direction && tempDirection1 != 0) tempDirection2 = 1;
+    if (toupper(key) == 'A' && direction != 3 && tempDirection1 == direction) tempDirection1 = 2, tempDirection2 = 2;
+    else if (toupper(key) == 'A' && tempDirection1 != direction && tempDirection1 != 3) tempDirection2 = 2;
+    if (toupper(key) == 'D' && direction != 2 && tempDirection1 == direction) tempDirection1 = 3, tempDirection2 = 3;
+    else if (toupper(key) == 'D' && tempDirection1 != direction && tempDirection1 != 2) tempDirection2 = 3;
 }
 
 void printScore() {
-        if(figure.run())std::cout << "Score: " << score << std::endl;
+    if (figure.run())std::cout << "Score: " << score << std::endl;
 }
 
 void startPage() {
@@ -181,10 +175,12 @@ int main()
         gotoXY(0, 0);
         figure.print();
     }
+
     figure.clear();
     figure.deleteCallback(showArrow);
     figure.deleteKeyCallback(model);
-    figure.setChar(10, 20, 'F');
+
+    figure.generateFood();
     figure.setKeyCallback(directionChange);
     figure.setCallback(moveSnake);
     figure.setCallback(showSnake);
@@ -193,7 +189,7 @@ int main()
         gotoXY(0, 0);
         figure.print();
     }
-    std::cout<<"You score is : " << score << std::endl;
+    std::cout << "You score is : " << score << std::endl;
     system("pause");
     return 0;
 }

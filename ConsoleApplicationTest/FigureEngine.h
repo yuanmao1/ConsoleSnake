@@ -4,6 +4,7 @@
 #include<string>
 #include <Windows.h>
 #include <conio.h>
+#include <random>
 
 class FigureEngine {
 private:
@@ -14,7 +15,7 @@ private:
     std::vector<CallbackFunction> callbacks;  // 更改为存储函数指针的向量
     std::vector<KeyCallbackFunction> keyCallbacks;  // 按键回调函数
     bool isGameOver;
-
+    std::mt19937 gen;
 public:
     FigureEngine(int rows, int cols);
     void print();
@@ -27,4 +28,5 @@ public:
     void deleteKeyCallback(KeyCallbackFunction keyCallback);  // 删除按键回调函数
     void setKeyCallback(KeyCallbackFunction keyCallback);  // 按键回调函数
     void gameOver();
+    void generateFood();
 };

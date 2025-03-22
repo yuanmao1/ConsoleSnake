@@ -90,3 +90,25 @@ void FigureEngine::gameOver() {
     std::cout << "Game Over!" << std::endl;
     Sleep(500);
 }
+
+void FigureEngine::generateFood() {
+    std::vector<std::pair<int, int>> emptyCells;
+
+    // 收集所有y坐标为偶数的空白位置
+    for (int i = 1; i < rows; ++i) {
+        for (int j = 2; j < cols; j += 2) { // 从2开始，步长为2
+            if (figure[i][j] == ' ') {
+                emptyCells.emplace_back(i, j);
+            }
+        }
+    }
+
+    if (!emptyCells.empty()) {
+        std::uniform_int_distribution<size_t> dist(0, emptyCells.size() - 1);
+        auto& [x, y] = emptyCells[dist(gen)];
+        figure[x][y] = 'F';
+    }
+    else {
+        // TODO: Win
+    }
+}
